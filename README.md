@@ -1,47 +1,51 @@
-# Handwritten Answer-Sheet Auto-Grader
+# GradeCraft 📝
+**Automated Answer Sheet Grading Powered by an Async Multi-Agent VLM Swarm**
 
-Small prototype to OCR scanned handwritten answer sheets using Google Vision, then evaluate against a provided solution using a local Ollama LLM.
+GradeCraft has been completely redesigned to leverage a specialized **Multi-Agent Vision-Language Swarm Architecture** powered by the ultra-fast Groq inference engine. It seamlessly converts raw, noisy handwritten exam booklets into accurate, mathematically verified objective scores.
 
-Highlights
-- OCR: Google Cloud Vision (document_text_detection) applied to PDF pages via `pdf2image`.
-- Evaluation: Local Ollama model (recommended: Llama-2-13b-chat or Mistral-7B-instruct) called via HTTP API.
-- Frontend: Streamlit app with upload + evaluate buttons.
+## 🚀 Architecture Highlights
 
-Setup
-1. Install dependencies:
-```
-pip install -r requirements.txt
-```
-2. Google Cloud Vision: set `GOOGLE_APPLICATION_CREDENTIALS` to your service account JSON.
-3. Install Poppler (required by `pdf2image`) and ensure `pdftoppm` is on PATH.
-	- On Windows, Poppler binaries may be located under a path like `D:\Tools\poppler-26.02.0\Library\bin`.
-	 - On Windows, Poppler binaries may be located under a path like `D:\Tools\poppler-26.02.0\Library\bin`.
-	- You can either add that folder to your `PATH`, or set an environment variable `POPPLER_PATH` to that folder, or paste the path into the Streamlit app's "poppler path" field.
-	- Example (PowerShell temporary):
-	```powershell
-	$env:Path += ";D:\Tools\poppler-26.02.0\Library\bin"
-	```
-	- Persistent (requires restart):
-	```powershell
-	setx PATH "$($env:PATH);D:\Tools\poppler-26.02.0\Library\bin"
-	setx POPPLER_PATH "D:\Tools\poppler-26.02.0\Library\bin"
-	```
+1. **Vision Transcriber (`meta-llama/llama-4-scout-17b-16e-instruct`)**
+   - Ingests high-resolution images of handwritten pages.
+   - Accurately recovers layout schemas, flattening 2D matrices and diagrams into structured Markdown and LaTeX.
+   - Built-in chunking logic respects strict vision API constraints.
 
-	4. Google Cloud credentials
-	- Create a service account with the Vision API enabled and download the JSON key.
-	- For Streamlit you can either set the environment variable before running the app:
-	```powershell
-	$env:GOOGLE_APPLICATION_CREDENTIALS="C:\path\to\service-account.json"
-	``` 
-	or upload the JSON in the app UI (temporary, session-only) or paste the path into the app's credential field.
-4. Install and run Ollama locally and pull a model (e.g., `llama2-13b-chat` or `mistral-7b-instruct`). Ollama listens on `http://127.0.0.1:11434` by default.
+2. **Math Verifier (`groq/compound-mini`)**
+   - Ingests the unified transcribed document alongside the solution criteria.
+   - Evaluates complex calculation paths and checks for mathematical equivalence.
 
-Run
-```
-streamlit run app.py
-```
+3. **Rubric Evaluator (`llama-3.3-70b-versatile`)**
+   - Parses the master solution key PDF into programmatic JSON rubrics.
+   - Synthesizes the transcribed exam and verification logs to output an array of scored evaluations with detailed deduction rationales.
 
-Notes
-- The solution file can be a plain text file, a digital PDF (text-extractable), or a scanned PDF (will be OCRed).
-- The parser looks for question headings like `Q1`/`Q 1`/`Question 1` and an optional `Marks:` line per question. If not found, the whole solution is treated as one item.
-- The grader asks the LLM to return structured JSON per question; if parsing fails, raw LLM output is shown.
+4. **Async Swarm Orchestrator (`src/core/throttler.py`)**
+   - Custom `LeakyBucketThrottler` paces concurrent API requests based on predefined rate limit profiles (RPM/TPM).
+   - High-performance, non-blocking execution pipeline seamlessly bridged into the Streamlit frontend.
+
+5. **Dependency-Free PDF Processing**
+   - Upgraded to `PyMuPDF` (`fitz`) to extract base64 images from PDFs instantly, completely eliminating tricky external dependencies like Poppler/pdf2image.
+
+## 🛠️ Setup Instructions
+
+1. **Install Dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Configure Environment**
+   Create a `.env` file in the root directory (or just use the sidebar in the app):
+   ```env
+   GROQ_API_KEY=your_groq_api_key_here
+   ```
+
+3. **Run the Dashboard**
+   ```bash
+   streamlit run app.py
+   ```
+
+## 📖 Usage
+1. Open the Streamlit dashboard on `http://localhost:8501`.
+2. Upload the **Solution Key PDF** (digital or scanned).
+3. Upload the **Student Answer Booklet PDF**.
+4. Click **Evaluate Student (Swarm Pipeline)**.
+5. Review the auto-generated scores and deduction rationales!
