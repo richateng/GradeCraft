@@ -1,0 +1,73 @@
+# .gitignore for GradeCraft_V3
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.env
+.venv/
+venv/
+env/
+ENV/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Editor / IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs and runtime files
+*.log
+logs/
+src/logs/
+
+# Streamlit local config and cache
+.streamlit/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Google credentials and secret keys (avoid committing service account JSON)
+gcloud_credentials.json
+*.key
+*.secret
+.env.local
+
+# Misc
+*.so
+*.dll
+*.exe
+*.pyc
+
+# Generated results / downloads
+results.json
+
+# Ignore local database or caches
+*.sqlite3
+.cache/
+
+# Node modules (if used)
+node_modules/
+
+# End of .gitignore
