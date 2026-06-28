@@ -9,9 +9,6 @@ class Settings(BaseSettings):
     groq_api_key: Optional[str] = None
     
     google_application_credentials: Optional[str] = None
-    poppler_path: Optional[str] = None
-    
-    ollama_base_url: str = "http://127.0.0.1:11434"
     request_timeout: int = 120
 
     model_config = SettingsConfigDict(
